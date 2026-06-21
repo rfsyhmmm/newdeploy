@@ -19,31 +19,94 @@ const HS = {
   R:  { vmount_r: [142, 159] },
   BT: { crown: [171, 141], cheek: [103, 229], strap: [171, 229], neck: [171, 300] },
 };
+/* a = mitigasi (langkah pencegahan agar risiko tak terjadi saat dicuci)
+   k = kompensasi bila risiko tetap terjadi — bisa berupa uang, service tambahan gratis, atau tidak ada */
 const RISK = {
-  visor:    { n: 'Visor / kaca',        p: 'High Priority', d: 'Visor exhibits severe scratching and deep gouges, impairing visibility and compromising structural integrity. Requires immediate replacement.', k: 'Rp 150.000' },
-  karet:    { n: 'Karet list',          p: 'Medium',        d: 'Karet list mengeras dan getas; berpotensi bocor air saat hujan dan mengurangi peredaman.',                                                       k: 'Rp 45.000' },
-  logo:     { n: 'Logo depan',          p: 'Low',           d: 'Stiker logo depan terkelupas sebagian; bersifat kosmetik dan tidak memengaruhi keselamatan.',                                                   k: 'Rp 15.000' },
-  logo_b:   { n: 'Logo Belakang',       p: 'Low',           d: 'Logo belakang mulai terkelupas; bersifat kosmetik.',                                                                                             k: 'Rp 15.000' },
-  shell_b:  { n: 'Shell Belakang',      p: 'Medium',        d: 'Terdapat baret pada shell belakang; perlu poles ringan.',                                                                                        k: 'Rp 40.000' },
-  topvent:  { n: 'Top Vent',            p: 'Medium',        d: 'Top vent tersumbat atau longgar; aliran udara berkurang.',                                                                                       k: 'Rp 30.000' },
-  shell_t:  { n: 'Shell Atas',          p: 'Medium',        d: 'Baret permukaan pada shell atas; disarankan poles ringan.',                                                                                      k: 'Rp 40.000' },
-  vmount_l: { n: 'Visor Mount (Kiri)',  p: 'Medium',        d: 'Dudukan visor sisi kiri longgar; visor dapat goyang.',                                                                                           k: 'Rp 35.000' },
-  vmount_r: { n: 'Visor Mount (Kanan)', p: 'Medium',        d: 'Dudukan visor sisi kanan longgar; visor dapat goyang.',                                                                                          k: 'Rp 35.000' },
-  intercom: { n: 'Intercom',            p: 'High Priority', d: 'Modul intercom berisiko rusak bila terkena air. Sebaiknya dilepas sebelum pencucian.',                                                           k: 'Rp 0 (dilepas dulu)' },
-  crown:    { n: 'Crown Pad',           p: 'Medium',        d: 'Crown pad sobek atau lepas; perlu dijahit ulang.',                                                                                               k: 'Rp 35.000' },
-  cheek:    { n: 'Cheek Pad',           p: 'Low',           d: 'Cheek pad berbau atau kotor; dapat dicuci ulang.',                                                                                               k: 'Cuci ulang gratis' },
-  neck:     { n: 'Neck Roll',           p: 'Low',           d: 'Neck roll sedikit lepas; perlu jahit ringan.',                                                                                                   k: 'Rp 20.000' },
-  strap:    { n: 'Chin Strap',          p: 'Medium',        d: 'Chin strap aus; periksa keamanan kunci D-ring.',                                                                                                 k: 'Rp 25.000' },
+  visor:    { n: 'Visor / Kaca',       p: 'Prioritas Tinggi', d: 'Visor sudah tergores dalam dan retak; rawan pecah atau makin parah saat dibersihkan.',              a: 'Bersihkan manual pakai kain microfiber lembut; hindari sikat dan air bertekanan tinggi.', k: 'Ganti unit visor (Rp 150.000)' },
+  karet:    { n: 'Karet List',         p: 'Sedang',           d: 'Karet list mengeras dan getas; rawan sobek atau terlepas saat terkena air.',                       a: 'Cuci lembut di sekitar list; hindari semprotan air bertekanan langsung ke karet.',       k: 'Rekat ulang gratis'            },
+  logo:     { n: 'Logo Depan',         p: 'Rendah',           d: 'Stiker logo depan sudah terkelupas sebagian; bersifat kosmetik.',                                  a: 'Lap searah dengan pelan di area stiker; tidak digosok.',                                  k: 'Tidak ada'                     },
+  logo_b:   { n: 'Logo Belakang',      p: 'Rendah',           d: 'Stiker logo belakang mulai terkelupas; bersifat kosmetik.',                                        a: 'Lap searah dengan pelan di area stiker; tidak digosok.',                                  k: 'Tidak ada'                     },
+  shell_b:  { n: 'Shell Belakang',     p: 'Sedang',           d: 'Ada baret halus pada shell belakang; bisa bertambah bila salah poles.',                            a: 'Gunakan kain microfiber dan cairan poles non-abrasif.',                                   k: 'Poles ulang gratis'            },
+  topvent:  { n: 'Top Vent',           p: 'Sedang',           d: 'Klip top vent longgar; rawan patah atau hilang saat dibuka untuk dibersihkan.',                    a: 'Bersihkan tanpa membongkar paksa; lepas-pasang klip dengan hati-hati.',                   k: 'Ganti klip vent (Rp 30.000)'   },
+  shell_t:  { n: 'Shell Atas',         p: 'Sedang',           d: 'Ada baret halus pada shell atas; bisa bertambah bila salah poles.',                                a: 'Gunakan kain microfiber dan cairan poles non-abrasif.',                                   k: 'Poles ulang gratis'            },
+  vmount_l: { n: 'Visor Mount Kiri',   p: 'Sedang',           d: 'Dudukan visor kiri longgar; sekrup rawan lepas atau hilang saat visor dilepas.',                   a: 'Tandai dan simpan sekrup; kencangkan kembali setelah dicuci.',                            k: 'Ganti dudukan (Rp 35.000)'     },
+  vmount_r: { n: 'Visor Mount Kanan',  p: 'Sedang',           d: 'Dudukan visor kanan longgar; sekrup rawan lepas atau hilang saat visor dilepas.',                  a: 'Tandai dan simpan sekrup; kencangkan kembali setelah dicuci.',                            k: 'Ganti dudukan (Rp 35.000)'     },
+  intercom: { n: 'Intercom',           p: 'Prioritas Tinggi', d: 'Modul elektronik; rawan rusak permanen bila terkena air saat pencucian.',                          a: 'Lepas intercom dari helm sebelum proses cuci dimulai.',                                   k: 'Tidak ada'                     },
+  crown:    { n: 'Crown Pad',          p: 'Sedang',           d: 'Crown pad sobek atau lepas dari dudukan; bisa makin lepas saat dicuci.',                           a: 'Cuci pad secara terpisah dengan tangan; tidak diperas keras.',                            k: 'Jahit ulang gratis'            },
+  cheek:    { n: 'Cheek Pad',          p: 'Rendah',           d: 'Cheek pad berbau atau kotor berlebih.',                                                            a: 'Rendam dan cuci terpisah dengan sabun lembut.',                                           k: 'Cuci ulang gratis'             },
+  neck:     { n: 'Neck Roll',          p: 'Rendah',           d: 'Neck roll sedikit lepas dari jahitan; rawan tertarik saat dicuci.',                                a: 'Cuci dengan tangan; hindari tarikan pada bagian yang lepas.',                             k: 'Jahit ulang gratis'            },
+  strap:    { n: 'Chin Strap',         p: 'Sedang',           d: 'Chin strap aus dan kunci D-ring perlu diperiksa; menyangkut keamanan.',                            a: 'Hindari rendam terlalu lama; keringkan menyeluruh agar tidak lembap.',                    k: 'Ganti tali/D-ring (Rp 25.000)' },
 };
-const prColor = p => p === 'High Priority' ? 'var(--red)' : p === 'Medium' ? 'var(--amber)' : '#9aa0a6';
+const prColor = p => p === 'Prioritas Tinggi' ? 'var(--red)' : p === 'Sedang' ? 'var(--amber)' : '#9aa0a6';
 
-function miniIcon(v) { return `<img src="assets/helm/${VIEW_FILES[v]}.svg" alt="">`; }
+/* ---------------- service pricing ---------------- */
+const TYPE_PRICE = { 'Standar': 35000, 'Full Face': 45000 };
+const FINISH = {
+  none:   { n: 'Tanpa', delta: 0,     t: 'Tanpa treatment finish khusus.' },
+  glossy: { n: 'Glossy', delta: 0,     t: 'Poles standar agar cat kembali berkilau.' },
+  doff:   { n: 'Doff',   delta: 15000, t: 'Treatment khusus matte-safe tanpa poles mengkilap.' },
+};
+const EXTRA_PRICE = 15000;
 
-/* ---------------- inspeksi ---------------- */
+/* bagian yang disembunyikan per tipe helm (cabang inspeksi).
+   Standar = half face (tanpa visor, dudukan visor, dan cheek pad). */
+const HIDDEN_PARTS = {
+  'Full Face': new Set(),
+  'Standar':   new Set(['visor', 'vmount_l', 'vmount_r', 'cheek']),
+};
+function activeParts(view) {
+  const hidden = HIDDEN_PARTS[helmType] || new Set();
+  return (PARTS[view] || []).filter(([id]) => !hidden.has(id));
+}
+/* folder gambar helm per tipe (Standar/half face punya set gambar sendiri) */
+function helmDir() { return helmType === 'Standar' ? 'half_face/' : ''; }
+
+function rupiah(n) { return 'Rp ' + n.toLocaleString('id-ID'); }
+function miniIcon(v) { return `<img src="assets/helm/${helmDir()}${VIEW_FILES[v]}.svg" alt="">`; }
+
+/* ---------------- order state ---------------- */
 let curView = 'F';
 const tagged = new Set();
 let helmType = 'Standar';
+let helmFinish = 'none';
+let extraOn = false;
+let notesOpen = false;
+let estimasi = 'Hari ini';
+const customNotes = [];
+const EST_IDS = { 'Hari ini': 'est-today', 'Besok': 'est-besok', 'Lusa': 'est-lusa' };
 
+let custName = '';
+let custHp = '';
+let orderCode = '';
+let orderSeq = 2;
+function genCode() { orderSeq++; return 'D-0106-' + String(orderSeq).padStart(3, '0'); }
+
+/* ---------------- dashboard ---------------- */
+let orders = [
+  { code: 'D-0106-001', name: 'Budi', type: 'Full Face', status: 'proses', when: 'Hari ini 15.00' },
+  { code: 'D-0106-002', name: 'Sari', type: 'Full Face', status: 'selesai', when: 'Hari ini 15.00' },
+];
+function renderOrders() {
+  const el = document.getElementById('order-list');
+  if (!el) return;
+  document.getElementById('order-count').textContent = orders.length;
+  el.innerHTML = orders.map(o => `
+    <div class="ocard ${o.status}">
+      <div class="row1"><span class="name">${o.name}</span><span class="badge ${o.status}"><span class="dot"></span>${o.status}</span></div>
+      <div class="meta"><span>#&nbsp;${o.code}</span><span>🪖 ${o.type}</span></div>
+      <div class="when">🕓 ${o.when}</div>
+    </div>`).join('');
+}
+
+function startOrder() {
+  const nama = document.getElementById('in-nama').value.trim();
+  if (!nama) { toast('Isi nama pelanggan dulu'); return; }
+  custName = nama;
+  custHp = document.getElementById('in-hp').value.trim();
+  go('s-tipe');
+}
+
+/* ---------------- inspeksi ---------------- */
 function hotspotSVG(id, x, y) {
   const on = tagged.has(id), w = 30, h = 22;
   let s = `<g style="cursor:pointer" onclick="toggleTag('${id}')">`;
@@ -53,8 +116,28 @@ function hotspotSVG(id, x, y) {
   return s + `</g>`;
 }
 
+function notesBlock() {
+  const chips = customNotes.length
+    ? customNotes.map((t, i) => `<span class="chip">${t}<span class="x" onclick="removeNote(${i})">✕</span></span>`).join('')
+    : '';
+  const body = notesOpen
+    ? `<div class="note-add">
+         <input class="input" id="note-in" placeholder="mis. Cat ears di top" onkeydown="if(event.key==='Enter')addNote()">
+         <button class="note-btn" onclick="addNote()">＋</button>
+       </div>
+       <div class="chips">${chips}</div>`
+    : '';
+  return `<div class="toggle-row">
+      <div class="switch ${notesOpen ? 'on' : ''}" onclick="toggleNotes()"><div class="knob"></div></div>
+      <div>
+        <div class="tt">Aksesori Khusus</div>
+        <div class="ts">Non-standar, mis. cat ears</div>
+      </div>
+    </div>${body}<div style="height:8px"></div>`;
+}
+
 function renderInspeksi() {
-  const parts = PARTS[curView] || [], pos = HS[curView] || {};
+  const parts = activeParts(curView), pos = HS[curView] || {};
   let hot = '';
   parts.forEach(([id]) => { if (pos[id]) hot += hotspotSVG(id, pos[id][0], pos[id][1]); });
   const viewBtns = VIEWS.map(([k, lab]) => `<div class="view-b ${k === curView ? 'sel' : ''}" onclick="setView('${k}')">${miniIcon(k)}${lab}</div>`).join('');
@@ -63,13 +146,13 @@ function renderInspeksi() {
   const curLabel = VIEWS.find(v => v[0] === curView)[1];
   document.getElementById('insp-visual').innerHTML =
     `<div class="helmet-card">
-       <img src="assets/helm/${VIEW_FILES[curView]}.svg" alt="${curLabel}">
+       <img src="assets/helm/${helmDir()}${VIEW_FILES[curView]}.svg" alt="${curLabel}">
        <svg class="hotspot-overlay" viewBox="0 0 342 367">${hot}</svg>
      </div>
      <div class="views">${viewBtns}</div>`;
 
   document.getElementById('insp-body').innerHTML =
-    `<div class="bagian-h">${curLabel} (${n} ditandai)</div>${checks}<div style="height:8px"></div>`;
+    `<div class="bagian-h">${curLabel} (${n} ditandai)</div>${checks}${notesBlock()}`;
 }
 
 function setView(v) { curView = v; renderInspeksi(); }
@@ -78,30 +161,86 @@ function openInspeksi() {
   document.getElementById('insp-title').textContent = 'Inspeksi Helm ' + helmType;
   curView = 'F'; renderInspeksi(); go('s-inspeksi');
 }
+
+function toggleNotes() { notesOpen = !notesOpen; renderInspeksi(); }
+function addNote() {
+  const el = document.getElementById('note-in');
+  const v = (el.value || '').trim();
+  if (!v) return;
+  customNotes.push(v);
+  renderInspeksi();
+}
+function removeNote(i) { customNotes.splice(i, 1); renderInspeksi(); }
+
+/* ---------------- service selection ---------------- */
 function pickType(t) {
   helmType = t;
   document.getElementById('opt-std').classList.toggle('sel', t === 'Standar');
   document.getElementById('opt-full').classList.toggle('sel', t === 'Full Face');
+  updateSpoiler();
+}
+function pickFinish(f) {
+  helmFinish = f;
+  ['none', 'glossy', 'doff'].forEach(k => {
+    const el = document.getElementById('fin-' + k);
+    if (el) el.classList.toggle('sel', k === f);
+  });
+  const ap = document.getElementById('ap-total');
+  if (ap) ap.textContent = rupiah(computeTotal());
+}
+function pickEst(v) {
+  estimasi = v;
+  Object.entries(EST_IDS).forEach(([val, id]) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('sel', val === v);
+  });
+  const ae = document.getElementById('ap-est');
+  if (ae) ae.textContent = v;
+}
+function toggleExtra() {
+  extraOn = !extraOn;
+  document.getElementById('sw-extra').classList.toggle('on', extraOn);
+  const ap = document.getElementById('ap-total');
+  if (ap) ap.textContent = rupiah(computeTotal());
+}
+function computeTotal() {
+  // Service cost only. Risk amounts are seller compensation, not a customer charge.
+  return (TYPE_PRICE[helmType] || 0) + FINISH[helmFinish].delta + (extraOn ? EXTRA_PRICE : 0);
+}
+function updateSpoiler() {
+  const el = document.getElementById('sp-total');
+  if (el) el.textContent = rupiah(computeTotal());
 }
 
 /* ---------------- risiko ---------------- */
 function allTagged() {
   const out = [];
-  VIEWS.forEach(([v]) => (PARTS[v] || []).forEach(([id]) => { if (tagged.has(id)) out.push(id); }));
+  VIEWS.forEach(([v]) => activeParts(v).forEach(([id]) => { if (tagged.has(id)) out.push(id); }));
   return out;
 }
 function goRisiko() {
   const ids = allTagged(), list = document.getElementById('risk-list');
   if (ids.length === 0) {
-    list.innerHTML = `<div class="pad" style="color:var(--muted);font-size:17px;text-align:center;padding:40px 22px">Tidak ada bagian rawan yang ditandai.<br>Helm dalam kondisi standar. ✅</div>`;
+    list.innerHTML = `<div class="pad" style="color:var(--muted);font-size:14px;text-align:center;padding:36px 22px">Tidak ada bagian rawan yang ditandai.<br>Helm dalam kondisi standar. ✅</div>`;
   } else {
     list.innerHTML = ids.map(id => { const r = RISK[id]; return `
       <div class="risk">
-        <div class="head"><div class="warn">⚠️</div><div><div class="rt">${r.n}</div><span class="pr-badge" style="background:${prColor(r.p)}">${r.p}</span></div></div>
-        <hr><div class="lbl">RISIKO</div><div class="desc">${r.d}</div>
-        <div class="komp"><div class="kl">KOMPENSASI</div><div class="kv">💵 ${r.k}</div></div>
+        <div class="risk-head">
+          <span class="pr-badge" style="background:${prColor(r.p)}">${r.p}</span>
+          <span class="risk-name">${r.n}</span>
+        </div>
+        <div class="risk-row"><span class="risk-lbl">Risiko</span><span class="risk-val">${r.d}</span></div>
+        <div class="risk-row"><span class="risk-lbl">Mitigasi</span><span class="risk-val">${r.a}</span></div>
+        <div class="risk-row"><span class="risk-lbl">Kompensasi</span><span class="risk-val risk-cost">${r.k}</span></div>
       </div>`; }).join('');
   }
+  const notes = document.getElementById('risk-notes');
+  notes.innerHTML = customNotes.length
+    ? `<div class="risk">
+         <div class="risk-head"><span class="pr-badge" style="background:#6f757b">Catatan</span><span class="risk-name">Aksesori / Catatan Khusus</span></div>
+         <div class="risk-row"><span class="risk-lbl">Catatan</span><span class="risk-val">${customNotes.join(', ')}</span></div>
+       </div>`
+    : '';
   go('s-risiko');
 }
 
@@ -115,21 +254,97 @@ function render(dir) {
   if (dir === 'back') el.classList.add('back');
   const sc = el.querySelector('.scroll');
   if (sc) sc.scrollTop = 0;
-  if (cur === 's-konfirmasi') {
-    const ids = allTagged();
-    document.getElementById('konf-tags').textContent = ids.length ? ids.map(i => RISK[i].n).join(', ') : 'kondisi standar';
-  }
+  if (cur === 's-tipe') updateSpoiler();
+  if (cur === 's-review') renderReview();
+  if (cur === 's-konfirmasi') fillKonfirmasi();
 }
 function go(id) { if (stack[stack.length - 1] === id) return; stack.push(id); history.pushState({}, ''); render('fwd'); }
 function back() { if (stack.length > 1) history.back(); }
-function resetToHome() { stack = ['s-home']; tagged.clear(); curView = 'F'; history.pushState({}, ''); render('back'); }
+function resetToHome() {
+  stack = ['s-home']; tagged.clear(); customNotes.length = 0; curView = 'F';
+  notesOpen = false; extraOn = false; helmFinish = 'none'; estimasi = 'Hari ini';
+  custName = ''; custHp = '';
+  const nm = document.getElementById('in-nama'); if (nm) nm.value = '';
+  const hp = document.getElementById('in-hp'); if (hp) hp.value = '';
+  pickType('Standar');
+  renderOrders();
+  history.pushState({}, ''); render('back');
+}
 window.addEventListener('popstate', () => { if (stack.length > 1) { stack.pop(); render('back'); } else { history.pushState({}, ''); render('back'); } });
 history.replaceState({}, '');
 
-function pickEst(el) { document.querySelectorAll('#s-estimasi .radio-opt').forEach(o => o.classList.remove('sel')); el.classList.add('sel'); }
+/* ---------------- review (operator, tanpa PIN) ---------------- */
+function renderReview() {
+  const ids = allTagged();
+  document.getElementById('ap-cust').textContent = custName || '—';
+  document.getElementById('ap-tipe').textContent = helmType + ' · ' + FINISH[helmFinish].n;
+  document.getElementById('ap-tags').textContent = ids.length ? ids.map(i => RISK[i].n).join(', ') : 'kondisi standar';
+  document.getElementById('ap-est').textContent = estimasi;
+  document.getElementById('ap-total').textContent = rupiah(computeTotal());
+  document.getElementById('sw-extra').classList.toggle('on', extraOn);
+  ['none', 'glossy', 'doff'].forEach(k => {
+    const el = document.getElementById('fin-' + k);
+    if (el) el.classList.toggle('sel', k === helmFinish);
+  });
+  Object.entries(EST_IDS).forEach(([val, id]) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('sel', val === estimasi);
+  });
+}
+function confirmOrder() {
+  orderCode = genCode();
+  orders.unshift({ code: orderCode, name: custName || 'Pelanggan', type: helmType, status: 'proses', when: 'Estimasi ' + estimasi });
+  go('s-konfirmasi');
+}
+
+function fillKonfirmasi() {
+  const ids = allTagged();
+  document.getElementById('konf-code').textContent = orderCode;
+  document.getElementById('konf-cust').textContent = custName || '—';
+  document.getElementById('konf-tipe').textContent = helmType + ' · ' + FINISH[helmFinish].n;
+  document.getElementById('konf-tags').textContent = ids.length ? ids.map(i => RISK[i].n).join(', ') : 'kondisi standar';
+  document.getElementById('konf-est').textContent = estimasi;
+  document.getElementById('konf-total').textContent = rupiah(computeTotal());
+}
+
+/* ---------------- cetak nota ---------------- */
+function cetakNota() {
+  const ids = allTagged();
+  const now = new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+  const temuan = ids.length
+    ? ids.map(i => `<div class="n-row"><span>${RISK[i].n}</span><span class="r">${RISK[i].k}</span></div>`).join('')
+    : `<div class="n-row"><span>Kondisi standar</span><span class="r">—</span></div>`;
+  const catatan = customNotes.length ? `<div class="n-sec">Catatan</div><div>${customNotes.join(', ')}</div>` : '';
+  const finishLine = FINISH[helmFinish].delta ? `<div class="n-row"><span>Finish ${FINISH[helmFinish].n}</span><span class="r">${rupiah(FINISH[helmFinish].delta)}</span></div>` : '';
+  const extraLine = extraOn ? `<div class="n-row"><span>Penanganan Tambahan</span><span class="r">${rupiah(EXTRA_PRICE)}</span></div>` : '';
+  document.getElementById('nota').innerHTML = `
+    <div class="n-shop">CekHelm</div>
+    <div class="n-sub">Cuci &amp; Perawatan Helm</div>
+    <div class="n-hr"></div>
+    <div class="n-code">${orderCode}</div>
+    <div class="n-row"><span>Pelanggan</span><span class="r">${custName || '-'}</span></div>
+    <div class="n-row"><span>No. HP</span><span class="r">${custHp || '-'}</span></div>
+    <div class="n-row"><span>Tanggal</span><span class="r">${now}</span></div>
+    <div class="n-hr"></div>
+    <div class="n-row"><span>Tipe Helm</span><span class="r">${helmType}</span></div>
+    <div class="n-row"><span>Finish</span><span class="r">${FINISH[helmFinish].n}</span></div>
+    <div class="n-row"><span>Estimasi</span><span class="r">${estimasi}</span></div>
+    <div class="n-sec">Temuan &amp; Kompensasi</div>
+    ${temuan}
+    ${catatan}
+    <div class="n-hr"></div>
+    <div class="n-row"><span>Layanan ${helmType}</span><span class="r">${rupiah(TYPE_PRICE[helmType])}</span></div>
+    ${finishLine}
+    ${extraLine}
+    <div class="n-total"><span>TOTAL</span><span>${rupiah(computeTotal())}</span></div>
+    <div class="n-foot">Terima kasih · Garansi 1 bulan</div>`;
+  window.print();
+}
+
 let tt;
 function toast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 1500); }
 
+renderOrders();
 renderInspeksi();
 
 /* ---------------- fit device frame on desktop only ---------------- */

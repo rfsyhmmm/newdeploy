@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>DTHREE · Notalks</title>
+    <title>CekHelm · Seller</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -35,63 +35,51 @@
         </div>
         <div class="gesture-bar"></div>
 
-        <!-- ==================== HOME ==================== -->
+        <!-- ==================== HOME (DASHBOARD) ==================== -->
         <div class="screen active" id="s-home">
           <div class="topbar">
             <div class="title">Pesanan</div>
           </div>
           <div class="scroll pad">
-            <div class="section-h">Order Aktif (2)</div>
-            <div class="ocard proses">
-              <div class="row1">
-                <span class="name">Budi</span><span class="badge proses"><span class="dot"></span>proses</span>
-              </div>
-              <div class="meta"><span>#&nbsp;D-0106-001</span><span>🪖 Full Face</span></div>
-              <div class="when">🕓 Hari ini 15.00</div>
-            </div>
-            <div class="ocard selesai">
-              <div class="row1">
-                <span class="name">Sari</span><span class="badge selesai"><span class="dot"></span>selesai</span>
-              </div>
-              <div class="meta"><span>#&nbsp;D-0106-002</span><span>🪖 Full Face</span></div>
-              <div class="when">🕓 Hari ini 15.00</div>
-            </div>
+            <div class="section-h">Order Aktif (<span id="order-count">2</span>)</div>
+            <div id="order-list"></div>
           </div>
           <div class="footer noborder"><button class="btn" onclick="go('s-order')">＋ Order Baru</button></div>
         </div>
 
-        <!-- ==================== ORDER ==================== -->
+        <!-- ==================== ORDER BARU (DATA) ==================== -->
         <div class="screen" id="s-order">
           <div class="topbar">
             <div class="back-btn" onclick="back()">←</div>
             <div class="center">Order Baru</div>
-            <div style="width:34px"></div>
+            <div style="width: 34px"></div>
           </div>
           <div class="scroll pad">
             <h2 style="font-size: 26px; margin-top: 2px">Order Baru</h2>
-            <p class="sub">Silakan lengkapi data pelanggan untuk memulai pesanan baru.</p>
+            <p class="sub">Isi data pelanggan untuk memulai pesanan.</p>
             <div class="label">Nama</div>
-            <input class="input" placeholder="Masukkan nama lengkap" />
+            <input class="input" id="in-nama" placeholder="Masukkan nama pelanggan" />
             <div class="label">No. HP</div>
-            <input class="input" inputmode="numeric" placeholder="Contoh: 081234567890" />
-            <div class="hint">Nomor ini dipakai untuk notifikasi saat helm selesai &amp; jadi titik mulai garansi 1 bulan</div>
+            <input class="input" id="in-hp" inputmode="numeric" placeholder="Contoh: 081234567890" />
+            <div class="hint">Untuk notifikasi helm selesai &amp; mulai garansi 1 bulan.</div>
           </div>
-          <div class="footer"><button class="btn" onclick="go('s-tipe')">Mulai →</button></div>
+          <div class="footer"><button class="btn" onclick="startOrder()">Mulai →</button></div>
         </div>
 
-        <!-- ==================== TIPE ==================== -->
+        <!-- ==================== TIPE + SPOILER ==================== -->
         <div class="screen" id="s-tipe">
           <div class="topbar">
             <div class="back-btn" onclick="back()">←</div>
-            <div class="center">Tipe Helm</div>
-            <div style="width:34px"></div>
+            <div class="center">Pilih Layanan</div>
+            <div style="width: 34px"></div>
           </div>
           <div class="scroll pad">
-            <h2>Tipe Helm</h2>
-            <p class="sub">Pilih tipe helm untuk melanjutkan proses inspeksi atau servis.</p>
-            <div style="height:16px"></div>
+            <h2>Pilih Layanan</h2>
+            <p class="sub">Pilih tipe helm dulu — bagian inspeksi menyesuaikan tipe.</p>
+
+            <div class="section-h">Tipe Helm</div>
             <div class="opt sel" id="opt-std" onclick="pickType('Standar')">
-              <div class="ic"><img src="assets/icon/halfface.svg" alt="Half Face"></div>
+              <div class="ic"><img src="assets/helm/half_face/left.svg" alt="Half Face" /></div>
               <div class="txt">
                 <div class="t">Standar</div>
                 <div class="d">Half face, tanpa chin bar</div>
@@ -99,31 +87,28 @@
               <div class="price">Rp 35.000</div>
             </div>
             <div class="opt" id="opt-full" onclick="pickType('Full Face')">
-              <div class="ic"><img src="assets/icon/fullface.svg" alt="Full Face"></div>
+              <div class="ic"><img src="assets/icon/fullface.svg" alt="Full Face" /></div>
               <div class="txt">
                 <div class="t">Full Face</div>
                 <div class="d">Lengkap dengan chin bar</div>
               </div>
               <div class="price">Rp 45.000</div>
             </div>
-            <div class="toggle-row">
-              <div class="switch on" onclick="this.classList.toggle('on')"><div class="knob"></div></div>
-              <div>
-                <div class="tt">Penanganan Tambahan</div>
-                <div class="ts">+20K (1 hari estimasi)</div>
-              </div>
-            </div>
           </div>
-          <div class="footer"><button class="btn" onclick="openInspeksi()">Lanjut Inspeksi Helm →</button></div>
+          <div class="spoiler">
+            <div class="sp-row"><span class="sp-lbl">Perkiraan biaya</span><span class="sp-total" id="sp-total">Rp 0</span></div>
+            <div class="sp-note">Biaya minimum tanpa tambahan</div>
+          </div>
+          <div class="footer noborder"><button class="btn" onclick="openInspeksi()">Lanjut Inspeksi →</button></div>
         </div>
 
         <!-- ==================== INSPEKSI ==================== -->
         <div class="screen" id="s-inspeksi">
           <div class="topbar">
             <div class="back-btn" onclick="back()">←</div>
-            <div class="title" id="insp-title">Inspeksi Helm Standar</div>
+            <div class="title" id="insp-title">Inspeksi Helm</div>
           </div>
-          <p class="insp-hint">Tap bagian yang rawan ↔ tag tercentang</p>
+          <p class="insp-hint">Tandai bagian yang rusak atau rawan.</p>
           <div id="insp-visual"></div>
           <div class="scroll" id="insp-body"></div>
           <div class="footer"><button class="btn" onclick="goRisiko()">Next</button></div>
@@ -134,53 +119,71 @@
           <div class="topbar">
             <div class="back-btn" onclick="back()">←</div>
             <div class="center">Ringkasan Risiko</div>
-            <div style="width:34px"></div>
+            <div style="width: 34px"></div>
           </div>
           <div class="scroll">
             <div class="pad">
               <h2>Ringkasan Risiko</h2>
-              <p class="sub">Review the identified risks before proceeding.</p>
-              <div style="height: 14px"></div>
+              <p class="sub">Jelaskan ke pelanggan sebelum bayar. <b>Kompensasi</b> = ganti rugi toko bila risiko terjadi.</p>
+              <div style="height: 10px"></div>
             </div>
             <div id="risk-list"></div>
+            <div id="risk-notes"></div>
           </div>
-          <div class="footer"><button class="btn" onclick="go('s-estimasi')">Buyer Setuju ⊘</button></div>
+          <div class="footer"><button class="btn" onclick="go('s-review')">Pelanggan Setuju →</button></div>
         </div>
 
-        <!-- ==================== ESTIMASI ==================== -->
-        <div class="screen" id="s-estimasi">
+        <!-- ==================== REVIEW (finish + estimasi + tambahan, TANPA PIN) ==================== -->
+        <div class="screen" id="s-review">
           <div class="topbar">
             <div class="back-btn" onclick="back()">←</div>
-            <div class="center">Estimasi</div>
-            <div style="width:34px"></div>
+            <div class="center">Konfirmasi Order</div>
+            <div style="width: 34px"></div>
           </div>
-          <div class="scroll">
-            <div class="est-head">
-              <h2>Estimasi</h2>
-              <p class="sub">Pilih waktu estimasi penyelesaian</p>
+          <div class="scroll pad">
+            <div class="approve-head">
+              <div class="lock-badge">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+              </div>
+              <h2>Konfirmasi Order</h2>
+              <p class="sub">Tetapkan finish, estimasi, dan biaya akhir.</p>
             </div>
-            <div style="height: 14px"></div>
-            <div class="radio-opt sel" onclick="pickEst(this)">
-              <div class="radio"><div class="in"></div></div>
-              <div class="rl">Besok, 15:00</div>
+            <div class="label">Tampilan / Finish</div>
+            <div class="finish-row">
+              <div class="finish-opt sel" id="fin-none" onclick="pickFinish('none')">Tanpa</div>
+              <div class="finish-opt" id="fin-glossy" onclick="pickFinish('glossy')">Glossy</div>
+              <div class="finish-opt" id="fin-doff" onclick="pickFinish('doff')">Doff <span class="fp">+15K</span></div>
             </div>
-            <div class="radio-opt" onclick="pickEst(this)">
-              <div class="radio"><div class="in"></div></div>
-              <div class="rl">Besok, 17:00</div>
+            <div class="label">Estimasi Selesai</div>
+            <div class="finish-row">
+              <div class="finish-opt sel" id="est-today" onclick="pickEst('Hari ini')">Hari ini</div>
+              <div class="finish-opt" id="est-besok" onclick="pickEst('Besok')">Besok</div>
+              <div class="finish-opt" id="est-lusa" onclick="pickEst('Lusa')">Lusa</div>
             </div>
-            <div class="radio-opt" onclick="pickEst(this)">
-              <div class="radio"><div class="in"></div></div>
-              <div class="rl">Lusa, 15:00</div>
+            <div class="card-box" style="margin-top: 14px">
+              <div class="kv-row"><span class="k">Pelanggan</span><span class="v" id="ap-cust">—</span></div>
+              <div class="kv-row"><span class="k">Tipe &amp; Finish</span><span class="v" id="ap-tipe">—</span></div>
+              <div class="kv-row"><span class="k">Bagian ditandai</span><span class="v" id="ap-tags">—</span></div>
+              <div class="kv-row"><span class="k">Estimasi selesai</span><span class="v" id="ap-est">—</span></div>
+              <div class="kv-row"><span class="k">Total biaya</span><span class="v" id="ap-total">—</span></div>
             </div>
+            <div class="toggle-row">
+              <div class="switch" id="sw-extra" onclick="toggleExtra()"><div class="knob"></div></div>
+              <div>
+                <div class="tt">Penanganan Tambahan</div>
+                <div class="ts">+15K (Ambil Besok)</div>
+              </div>
+            </div>
+            <div class="extra-note">Pembersihan ekstra untuk noda membandel, jamur, atau bau yang perlu perlakuan khusus — perlu tambahan waktu pengerjaan.</div>
           </div>
-          <div class="footer noborder"><button class="btn" onclick="go('s-konfirmasi')">Konfirmasi →</button></div>
+          <div class="footer"><button class="btn" onclick="confirmOrder()">Konfirmasi &amp; Simpan →</button></div>
         </div>
 
         <!-- ==================== KONFIRMASI ==================== -->
         <div class="screen" id="s-konfirmasi">
           <div class="topbar">
             <div class="back-btn" onclick="resetToHome()">✕</div>
-            <div class="center">Konfirmasi</div>
+            <div class="center">Tersimpan</div>
             <div style="width: 34px"></div>
           </div>
           <div class="scroll">
@@ -188,27 +191,35 @@
               <div class="circle">
                 <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4 10-10" /></svg>
               </div>
-              <h2>Konfirmasi</h2>
-              <p class="sub">Order berhasil diproses dan disimpan.</p>
+              <h2>Order Tersimpan</h2>
+              <p class="sub">Pesanan masuk daftar proses. Cetak nota untuk pelanggan.</p>
               <div class="card-box">
                 <div class="cl">KODE ORDER</div>
-                <div class="code">D-0106-003</div>
+                <div class="code" id="konf-code">D-0106-003</div>
               </div>
               <div class="card-box">
-                <div class="kv-row"><span class="k">Tanggal Inspeksi</span><span class="v">12 Okt 2023, 14:30</span></div>
-                <div class="kv-row"><span class="k">Inspektur</span><span class="v">Budi Santoso</span></div>
-                <div class="kv-row"><span class="k">Status Safety</span><span class="badge pass">PASS</span></div>
+                <div class="kv-row"><span class="k">Pelanggan</span><span class="v" id="konf-cust">—</span></div>
+                <div class="kv-row"><span class="k">Tipe &amp; Finish</span><span class="v" id="konf-tipe">—</span></div>
                 <div class="kv-row"><span class="k">Bagian ditandai</span><span class="v" id="konf-tags">—</span></div>
+                <div class="kv-row"><span class="k">Estimasi selesai</span><span class="v" id="konf-est">—</span></div>
+                <div class="kv-row"><span class="k">Total biaya</span><span class="v" id="konf-total">—</span></div>
+                <div class="kv-row"><span class="k">Status</span><span class="badge proses"><span class="dot"></span>proses</span></div>
               </div>
             </div>
           </div>
-          <div class="footer noborder"><button class="btn link" onclick="resetToHome()">Kembali ke Dashboard</button></div>
+          <div class="footer noborder">
+            <button class="btn" onclick="cetakNota()">🖨 Cetak Nota</button>
+            <button class="btn ghost" onclick="resetToHome()">Kembali ke Dashboard</button>
+          </div>
         </div>
 
         <div class="toast" id="toast"></div>
       </div>
     </div>
-    <div class="hint-desktop">Ganti view, tap helm/checklist untuk menandai · tombol ← &amp; Back browser berfungsi</div>
+    <div class="hint-desktop">Alur seller · pilih layanan → inspeksi (checklist) → risiko → konfirmasi → cetak nota</div>
+
+    <!-- nota cetak (hanya muncul saat print) -->
+    <div id="nota"></div>
 
     <script src="app.js"></script>
   </body>
